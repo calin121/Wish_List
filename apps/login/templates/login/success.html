@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>My Wish List</title>
+		<style type="text/css">
+		
+			.success {
+				border: 1px solid black;
+				background-color: green;
+				width: 300px;
+				color: white;
+			}
+			form {
+				display: inline;
+			}
+			.row1 {
+				background-color: #D3D3D3;
+			}
+			.head_row {
+				background: pink;
+			}
+			table {
+				border: 1px solid black;
+			}
+
+		</style>
+	</head>
+	<body>
+		<h1>Hello, {{ request.session.user_name }}</h1>
+
+		<!-- Add Item Button -->
+		<a href="{% url 'wishlist:create_item' %}">Add Item</a>
+
+<!-- This link is to be removed -->
+	
+		<!-- Flash Messages -->
+		{% if messages %}
+			{% for message in messages %}
+				<p class="success">{{message}}</p>
+			{% endfor %}
+		{% endif %}
+		
+		<!-- Your Wishlist -->
+		<h2>Your Wish List</h2>
+		<table>
+			<thead>
+				<tr class="head_row">
+					<th>Item</th>
+					<th>Creator Name</th>
+					<th>Date Created</th>
+					<th>Action</th>
+				</tr>
+			</thead>
+				{% for item in my_list %}
+				<tr class="{% cycle 'row1' 'row2' %}">			
+					<td><a href="{% url 'wishlist:wish_item' item.id %}">{{item.product}}</a></td>
+					<td>{{item.creator.name}}</td>
+					<td>{{item.created_at}}</td>
+					<td>
+						<form class="remove_from_list" action="{% url 'wishlist:remove' item.id %}" method="POST">
+							{% csrf_token %}
+						<input type="submit" name="add" value="Remove from My Wish List">
+						</form>
+						{% if item.creator.id == request.session.user_id %}
+						<form class="delete" action="{% url 'wishlist:delete' item.id %}" method="POST">
+							{% csrf_token %}
+						<input type="submit" name="add" value="Delete Product">
+						</form>
+						{% endif %}
+					</td>
+				</tr>
+				{% endfor %}
+			</table>
+
+		<!-- Other's Wishlist -->
+		<h2>Other Users' Wish List Items</h2>
+			<table>
+				<thead>
+					<tr class="head_row">
+						<th>Item</th>
+						<th>Creator Name</th>
+						<th>Date Created</th>
+						<th>Action</th>
+					</tr>
+				</thead>
+				{% for item in items_list %}
+				<tr class="{% cycle 'row1' 'row2' %}">			
+					<td><a href="{% url 'wishlist:wish_item' item.id %}">{{item.product}}</a></td>
+					<td>{{item.creator.name}}</td>
+					<td>{{item.created_at}}</td>
+					<td class="buttons">
+						<form class="add_to_list" action="{% url 'wishlist:add' item.id %}" method="POST">
+							{% csrf_token %}
+						<input type="submit" name="add" value="Add to My Wish List">
+						</form>
+						{% if item.creator.id == request.session.user_id %}
+						<form class="delete" action="{% url 'wishlist:delete' item.id %}" method="POST">
+							{% csrf_token %}
+						<input type="submit" name="add" value="Delete Product">
+						</form>
+						{% endif %}
+					</td>
+				</tr>
+				{% endfor %}
+			</table>
+
+
+		<!-- log out function -->
+		<form class="logout" action="{% url 'users:logout' %}" method="POST">
+			{% csrf_token %}
+			<input type="submit" name="logout" value="logout">
+		</form>
+	</body>
+</html>

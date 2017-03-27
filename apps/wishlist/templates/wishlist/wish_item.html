@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		{% for item in items_list %}
+		<title>{{ item.product }}</title>
+		{% endfor %}
+		<style type="text/css">
+			.row1 {
+				background-color: #D3D3D3;
+			}
+			.head_row {
+				background: pink;
+			}
+			table {
+				border: 1px solid black;
+			}
+			h1 {
+				color: blue;
+			}
+			h2 {
+				color: #228B22;
+			}
+		</style>
+	</head>
+	<body>
+
+		<!-- Home link -->
+		<a href="{% url 'users:success' %}">Home</a>
+
+		<!-- Flash Messages -->
+		{% if messages %}
+			{% for message in messages %}
+				<p class="success">{{message}}</p>
+			{% endfor %}
+		{% endif %}
+
+		<!-- Item name -->
+		{% for item in items_list %}
+		<h1>{{ item.product }}</h1>
+		
+		<!-- Item description -->
+		<h2>Description: {{ item.description }}</h2>
+		
+
+		<!-- Other users with this item -->
+		<h3>Users who's wishlist has this product:</h3>
+			<table>
+				<tr class="head_row">
+					<th>Name</th>
+				</tr>
+				{% for x in item.all_lists.all %}
+				<tr class="{% cycle 'row1' 'row2' %}">
+					<td>{{x.name}}</td>
+				</tr>
+				{% endfor %}
+			</table>				
+		
+		{% endfor %}
+		<!-- log out function -->
+		<form class="logout" action="{% url 'users:logout' %}" method="POST">
+			{% csrf_token %}
+			<input type="submit" name="logout" value="logout">
+		</form>
+	</body>
+</html>
